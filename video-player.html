@@ -1,0 +1,65 @@
+<html>
+<body>
+    <div hidden><img id="xournal" src="bg.png" width="500" height="400"></div>
+<canvas id="myCanvas" width="612" height="792"
+style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+<input type="file" name="file" id="file"/>
+<button onclick="play()">Play/Pause</button>
+<script>
+    var dataArr=[];
+    var time=0;
+    document.getElementById('file').onchange = function(){    
+    var file = this.files[0];
+    var reader = new FileReader();
+    reader.onload = function(progressEvent){
+    // Entire file
+    console.log(this.result);
+    // By lines
+    var end=1;
+    var lines = this.result.split('\n');
+    for(var line = 0; line < lines.length; line++){
+        var words = lines[line].split(' ');
+        if(words[0].localeCompare("<stroke")==0)
+        {
+            var dataVal = lines[line+1].split(' ');
+            for(var i = 0 ; i < dataVal.length ; i++) {
+                if(dataVal[i].localeCompare("NaN")!=0)
+                dataArr.push(parseFloat(dataVal[i]));
+            }
+        }
+	  console.log(lines[line]);
+    }
+  };
+  reader.readAsText(file);
+};
+
+function play(){
+    var element = document.getElementById("myCanvas");
+    //var t0=window.performance.now();
+    var c = element.getContext("2d");
+    var width = element.width;
+    var height = element.height;
+    var index=0;
+    var img = document.getElementById("xournal");
+    c.drawImage(img,0,0,612,792);
+    setInterval(
+        function(){
+            if(time>20){
+                if(dataArr[index].toString().localeCompare("NaN")==0)
+                    index++;
+                else{
+                    c.beginPath();
+                    c.moveTo(dataArr[index],dataArr[index+1]);
+                    c.lineTo(dataArr[index+2],dataArr[index+3]);
+                    c.stroke();
+                    index=index+2;
+                }
+				time = 0;
+            }
+            time=time+1;
+        },1);
+}
+</script>
+</body>
+</html>

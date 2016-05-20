@@ -29,4 +29,10 @@ end
 progressIndication = sprintf('Wrote %d frames to folder "%s"',numberOfFramesWritten,outputFolder);
 disp(progressIndication);
 figure, imshow( imabsdiff((videoFrames(:, :, :, 1)), (videoFrames(:, :, :, 20))), [] );
+[x, y, z] = size(diff);
+disp(x);
+disp(y);
+disp(z);
+%disp(rms(diff));
+figure, imshow((diff), []);
 %disp( isequal((videoFrames(:, :, :, 1)), (videoFrames(:, :, :, 20))) );
