@@ -1,0 +1,73 @@
+<html>
+<body>
+    <div hidden><img id="xournal" src="bg.png" width="500" height="400"></div>
+<canvas id="myCanvas" width="612" height="792"
+style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+<input type="file" name="file" id="file"/>
+<button onclick="play()">Play/Pause</button>
+<script>
+
+    var xArr=[];
+    var yArr=[];
+    var tArr=[];
+    var time=0;
+    document.getElementById('file').onchange = function(){  
+		var file = this.files[0];
+		var reader = new FileReader();
+		reader.onload = function(progressEvent){
+			// Entire file
+			console.log(this.result);
+			
+			// By lines
+			var lines = this.result.split('\n');
+			
+			var xwords = lines[0].split(' ');
+			for(var word = 0 ; word < xwords.length ; word++) {
+				xArr.push(parseFloat(xwords[word]));
+			}
+			
+			var ywords = lines[1].split(' ');
+			for(var word = 0 ; word < ywords.length ; word++) {
+				yArr.push(parseFloat(ywords[word]));
+			}
+			
+			var twords = lines[2].split(' ');
+			for(var word = 0 ; word < twords.length ; word++) {
+				tArr.push(parseFloat(twords[word]));
+			}
+		};
+		reader.readAsText(file);
+	};
+
+
+	function play(){
+		var element = document.getElementById("myCanvas");
+		var c = element.getContext("2d");
+		var width = element.width;
+		var height = element.height;
+		var index=0;
+		var img = document.getElementById("xournal");
+		c.drawImage(img,0,0,612,792);
+		setInterval(
+			function(){
+				var my_imageData = c.getImageData(0,0,width, height);
+				//color(my_imageData,Math.round(xArr[index]*612.0/480.0),Math.round(yArr[index]*792.0/854.0),0,0,0,255);
+				color(my_imageData,Math.round(yArr[index]*792.0/854.0),Math.round(xArr[index]*612.0/480.0),0,0,0,255);
+				c.putImageData(my_imageData,0,0);
+				index=index+1;
+			}
+			,0.1);
+	}
+	
+	function color(imageData,x,y,r,g,b,a){
+			var index = (x + y * imageData.width) * 4;
+			imageData.data[index+0] = r;
+			imageData.data[index+1] = g;
+			imageData.data[index+2] = b;
+			imageData.data[index+3] = a;
+	}
+
+</script>
+</body>
+</html>
