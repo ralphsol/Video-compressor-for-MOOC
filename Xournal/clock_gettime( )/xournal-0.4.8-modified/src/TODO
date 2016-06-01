@@ -1,0 +1,251 @@
+List of features to be implemented (not in any particular order)
+----------------------------------------------------------------
+
+- collaborative editing (see discussion with Erik Demaine)
+- porting to MacOS; merge Nokia port
+- multiple-scenario undo history
+
+- collaborative: allow non-x86 endianness (for ints, for floats?)
+- collaborative: have an initial undo item = contents of the initial
+  xoj file + attachments for bitmap, pdf, and ps backgrounds
+
+- cleanup of undo history (keep track of refcounts, delete old undo)
+  save-and-clear-undo ?
+
+- image patch related:
+  - paste and selresize don't put rectangle at top
+  - need option for image mode to revert to previous tool?
+  - optimize storage of embedded images by detecting duplicates (D. German)
+  - paste images should resize/position sensibly, e.g. not paste at location
+      of paste button!
+
+BUGS:
+- lingering issues with synaptics touchpads? (#2872667)
+ (todo) - set device to Absolute mode at startup? (GDK doesn't expose API,
+          cf XSetDeviceMode() in /usr/include/X11/extensions/XInput.h)
+- lingering issues with Fujitsu, touch, etc. - ButtonPress wrong coordinates
+- export to PDF should see cropbox size if smaller, and map the
+   cropbox -- not the entire page -- to the page area! (2009-11-18 forum)
+
+BEHAVIOR TODO:
+- option to have "Save Prefs" save current brushes as settings, not defaults
+- method to map more general devices to specific tools or to Ignore
+  (e.g.: X220T ignore trackpoint; map touchscreen to Hand, eraser to Eraser)
+
+WIN32:
+- test further
+- write an installer
+- bug: cairo-scaled-font in printing? (2009-11-18 bug tracker)
+- bug: second copy-paste brings back older paste items
+- bug: sometimes seems to hang for a while at/near end_text() ?
+
+PATCHES TO INCORPORATE:
+
+- ezyang e-mail of 11/28/2011: patches in Ubuntu to fix PDF showing up?
+http://archive.ubuntu.com/ubuntu/pool/universe/x/xournal/xournal_0.4.5-3.debian.tar.gz
+actually not necessary anymore? (ezyang 12/2/2011)
+
+- tauu e-mail of 12/1/2011: 8 small patches for win32, uploaded on tracker
+https://sourceforge.net/tracker/index.php?func=detail&aid=3447356&group_id=163434&atid=827735
+(not usable as such; but a version of XINPUT_BUGFIX to map the device to
+a monitor, and awareness of screen recofigurations, are both desirable)
+
+- patch: add Alt-Up/Dn accelerators for show/hide layer. See
+  show_hide_layer.patch
+
+* my own patch noresize_background_v1.patch  (also in xournal-working/)
+
+** patch: ortho/snap (revised Apr 13 2009)
+   xournal_ortho_snap_patch_4 (by Josef Pavlicek)
+
+** customize paper ruling (Gautam Iyer e-mail Nov 30 2009 / SF tracker)
+
+** cairo export to PNG (Man = Paulo Neves, e-mail Feb 3 '10, saved as
+  cairo-png-rendering.diff.txt (refactor printing of page to cairo surface
+  with the gtk-print code).
+
+- patch by S. Guest
+  shortcut to increase/decrease text font size by 1 point (?) - acts just
+  as if one had clicked font sel box and resized (affects sel text + cur font)
+
+- make line spacing in text objects customizable: to a fixed scaling factor,
+  a fixed number of units, or the paper ruling (esp. the latter!!)
+
+- page size dialog box should have a check button to keep background size
+  the same (so rescaling creates margin around bitmap or PDF background).
+  This will need an extension to the file format, to allow a page background
+  to have a different size from the page itself.
+
+- roadmap towards SVG support: see 1/25/2010 Mark Edgington email & reply
+  (1) export to SVG (using pages and groups for pages and layers; 
+  use comment tags to make export nonlossy;
+  (2) import from this subset of SVG;
+  (3) add SVG to the file-open and save formats
+
+- roadmap towards PDF encapsulation: see 1/29/2010 forum posts
+  When exporting to PDF, don't just append our annotations as PDF code but
+  also include the .xoj file within the pdf, and ensure the initial pdf is
+  well-delimited from the rest. When opening a PDF that includes such
+  markings, discard the annotation part of the PDF and open the embedded xoj
+  instead. Later, offer such PDF as a file-open and save format (even when
+  there's no PDF background being annotated!!).
+
+*** should have Open, Save, Save As manipulate at least 3 formats:
+  - XOJ
+  - PDF with embedded xoj file in an object (opens with annot. in PDF viewer,
+    with background only + separate xoj in xournal)
+  - SVG (subset only)
+  additionally, should have "print to": printer, PDF, SVG, bitmap.
+
+- allow djvu and other backgrounds (but then can't export to PDF)
+
+- PDF bg memory usage throttling / delete oldest pdf backgrounds
+- replace ttsubset by something more modern? (eg. from cairo ?)
+- auto-hide patch from ~/prog/src/xournal-autohide/ ?
+     (check for cpu usage; handle BOTH edges
+      and only (un)hide stuff at the correct edge!)
+** UI update (Bob McElrath) -- eliminating status bar, compact layout,
+   "compact interface" by default; themes, with line in config file
+   to load pixmaps from pixmaps/$THEME/ (see Jan 9, 2009 emails)
+** "new page before/after" on a PDF bg page should ask: same page, other page of
+  PDF file, default paper
+** should also have in Journal -> Paper style the option "Pdf page ..."
+  which then lets us change the page number.
+- new recognizer icon (andruk on patches tracker)
+- recognizer: if variable-width, associate average width
+- recognizer should snap to existing recognized geometric shapes
+- patch to find text in PDF (dmg = Daniel German, Nov 13 2009)
+
+- search through text (xoj and PDF background) (with highlight? forwd/backwd)
+  (see evince). Also: ability to select rectangle on PDF bg and copy-paste
+  as bitmap or as text.
+
+- improve recognizer: two passes for polygons (low tolerance, then higher)
+  to better detect elongated rectangles? (if low tolerance recognizer
+  doesn't get a rectangle, then use higher tolerance for everything else,
+  since otherwise there's too much risk of splitting a segment into 2)
+- snap-to-grid (also for ruler & recognizer vertices)
+  and maybe also snap-to-vertices (option for ruler and recognizer)?
+- config option: config save current tool options instead of default ones
+
+- bug in truetype subset generation w/ Adobe 9, see if gtk-print any better?
+
+- drag-and-drop, copy-paste text & images directly into xournal
+- proximity detection: eraser proximity switches mapping? 
+  proximity out removes cursor until next motionnotify?
+
+- render page to bitmap: for export, preview, and copy-paste
+    (render using libart, see how gnomecanvas does it?)
+    NO: render using Cairo !!!
+    (copy-paste: config option to render only current layer or all below?)
+- cut-and-paste of selection into other apps (as bitmap; as SVG?)
+
+- navigation sidebar with bitmap page previews
+- bitmap preview for document icon in desktop environments?
+- "organizer" side panel (hierarchy of notes), cf. gjots
+- maintain e-library: table of md5sums of pdfs with associations
+  to the corresponding xoj's absolute paths (cf. forum topic
+  "Use MD5..." of Dec 2009)
+
+- see iRex code for generic viewer + PDF plugin including caching,
+  throttling etc. (Marcel Hendrickx email of Sep 11 '09) 
+
+- allow toolbar to go vertical
+- toolbar buttons should react to button 2/3 click to modify settings
+  for that tool!!
+
+- paste text directly into xournal, from xournal?
+    (instead of starting a text item and pasting into/from it)
+- insert links (to URLs; within document/to other xoj? hand mode navigates)
+- a command + keyboard shortcut to switch mappings (1<->2, 1<->3, 2<->3)
+     (A. Rechnitzer Sept 11, 2007)
+- modify encoding of TrueType font subsets or provide cmap so pdf text
+  can be extracted
+
+- smoothing of strokes (for users without tablets / with deficient drivers)
+- add config option to limit total memory usage for PDF bitmaps
+- ability to select entire page for copy-paste (as bitmap / reorder xournal)
+- copy/paste of an entire page (beware if PDF bg is not compatible!)
+
+- convert to/from Jarnal format; to/from MS Journal format???
+- export as SVG, as bitmap (use Cairo for this)
+- improved PDF viewer features (search text, hyperlink, page borders...)
+   (using full poppler api ?)
+- search text: among PDF background (using poppler); among text annotations
+
+- use system paper size as default (/etc/papersize)
+- sticky notes (anchor visually text box to a bg location)
+- use relative paths for bg documents (e.g. annotated PDF)
+- flush display queue when drawing over a slow X server?
+- more paper customization (in particular, 1/2 inch graph paper)
+    (2 custom papers with settings in config file? 
+     a folder with blank PDF or xoj papers and quick-access?)
+    (also: engineering paper; isometric paper -- Dan Ott  Sep 4 '09)
+- option to map a button to a context menu (incl. tool selection, ...)
+- option to map a button to "undo"
+- xournal_page-shadow.diff (Martin Kiefel Feb 5 2007)
+- xoj2pdf on command line
+- 'insert blank page after' command (more useful in PDF annot !)
+- load images as bg if given on command-line (as with PDF on commandline)
+- flatten (incl undo/redo...) - enabled only if nlayers>1
+- color chooser (papercolor, pen color); have default colors and a history
+  appear as palette in there!
+- printing: print-options, save printer settings (throughout a session,
+   and on disk) (maybe a separate config file .xournal/gnome-print-settings)
+- help index
+- option for highlighter to be always at bottom of its layer
+- more pen/highlighter shapes (chisel)
+- slanted tip pens (calligraphy)
+- toolbar buttons to access custom preset tools (e.g. text or pen with settings)
+- text boxes with opaque background
+- recalibration upon screen resize / compensation for miscalibration
+    (use ConfigureNotify event and XInput? cf "Bugs" tracker 08/2007)
+- find a better behavior for vertical space tool across page boundaries ?
+   config options? 1) when there's not enough space at bottom of page:
+                       - resize the page
+                       - move stuff to next page
+                       - move stuff to a new page
+                   2) when moving to another page:
+                       - move everything
+                       - move only what doesn't fit (??? looks hard)
+   option for vert space tool to also move the background??
+   (PDF: cut-and-crop by running PDF code twice with 2 different clipboxes?)
+- option to save all annotated files within the .xoj
+- non-antialiased version for handhelds
+- customize autogenerated save file names 
+- layer dialog box to set visibility status of each layer regardless of
+  which layer is being edited
+- option to link layer creation and visibility status for all pages
+  (Eric Borghs 04/15/08)
+- display corruption on scroll down when bottom of window is obscured??
+  (probably a gnomecanvas or X bug -- expose event generated for wrong
+  region, or not processed?)
+- keep only a few pages of a PDF file in memory at any given time; generate
+  pages by parsing pdf info rather than generating bitmaps for all of them.
+- win32 port (Matteo Abrate)
+- snap-to-grid tool? (Matteo Abrate)
+- EPOS 7/24/07: Thumbnails pane
+- EPOS: Connect to EPOS api which sends A4 mapped points
+- EPOS: Cut and Paste into OpenOffice applications and the GIMP (as bitmap??)
+- EPOS: Export pages to pictures in the Jpg and Png formats.
+- EPOS: Rotate Ink in custom angle.
+- handwriting recognition???? (cellwriter?) unlikely. we don't have grids
+  see galileon comment on 2008-07-29 to tracker #1925309: word recognizer
+- handwritten stroke search in document (see cellwriter?)
+  (correlate inertia-normalized strokes in lift to unit cotangent bundle?)
+- option: export to PDF with incremental pages for successive layers
+    (for presentations) (Daniel Brugarth 8/18/07)
+- Samuel Hoffstaetter: sidebar thumbnails, ...
+- YoYo Siska patch for desktop mode ??
+- Vivek Ayer: rotate paper wrt screen (for environments where display
+  rotation doesn't work): gnome_canvas_item_affine_relative(canvas->root, ...)
+  would rotate all but text items (still need to modify scroll bbox, and
+  adjust event coordinates by inverse rotation).
+- rotate PDF background pages (individually wrt each other, see #2099935)
+- switch to libglade, and allow customization of key shortcuts (accels)
+
+- command to copy a selected shape to a keybinding that will paste it
+  (so one can define symbols to insert into typed notes)  (e.g. "be able
+  to bind Ctrl-B to draw a \beta" for class notes). (shape, binding) sets are
+  local to one session (different for different classes; but save them into
+  the xoj file maybe ?) [Felix Giannelia 09/29/2009]
