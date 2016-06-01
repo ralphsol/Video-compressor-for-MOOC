@@ -1,0 +1,108 @@
+Xournal 0.4.8 -- Win32 binary distribution (unstable)
+-----------------------------------------------------
+
+Xournal is written by Denis Auroux and other contributors.
+More information can be found at http://xournal.sourceforge.net
+Installation instructions: see below.
+
+This is a binary distribution of Xournal 0.4.8 for the Win32
+platform, including all necessary libraries, compiled using
+the MinGW system. 
+
+Special thanks to Dirk Gerrits for detailed instructions on
+how to compile Xournal for Win32.
+
+Please note this Win32 port is still unstable. Some features 
+do not work properly. Stability and data integrity have not been
+checked carefully (use at your own risk); and there is no installer.
+
+
+INSTALLATION INSTRUCTIONS:
+--------------------------
+
+* STEP 1 - INSTALL XOURNAL
+
+Unzip the entire distribution into a directory of your choice, and
+create a shortcut to xournal.exe on your desktop.
+
+(Note that conflicts may arise if you already have other versions
+of the relevant libraries installed in your Windows directory).
+
+* STEP 2 - DISABLE WINDOWS FEATURES THAT INTERFERE WITH PEN INPUT
+
+Disable all the pen stroke/gesture detection features of your version
+of Windows that interfere with proper pen input in xournal. 
+In Windows 8, open the Control Panel, go to "Pen and Touch", and 
+disable the "Flicks" feature entirely.
+
+To avoid blurry display and/or Wacom tablet calibration issues with
+multiple monitors, consider disabling the display scaling features
+of Windows 7 and 8 if you have a high pixel density display:
+right-click on the xournal.exe shortcut, go to Properties -> 
+Compatibility -> check "Disable display scaling on high DPI settings".
+(Or disable display scaling system-wide: open the Control Panel, go to
+Display, and set the "make text and other items smaller" feature to the
+"smaller" or "100%" setting.)
+
+* STEP 3 - INSTALL THE WACOM TABLET DRIVER
+
+If you have a Wacom tablet (or Tablet PC using a Wacom digitizer),
+you are strongly encouraged to install the Wacom tablet driver,
+available at http://us.wacom.com/en/feeldriver/ for Tablet PCs
+(http://us.wacom.com/en/support/drivers/ for standalone tablets).
+This will make stroke smoothing and pressure sensitivity available.
+If your tablet pen has an eraser tip, you should enable the "Eraser tip"
+option in the Options menu.
+
+This should work under all recent versions of Windows (XP or later);
+however on many systems, it is necessary to use the pen to start xournal
+for these features to be available in xournal, or at least tap the pen to
+the screen before starting xournal. (Check that Options -> Use XInput is 
+available and checked; if it is grayed out the wacom driver is not active).
+
+* STEP 4 - OTHER LANGUAGES
+
+If you would like to use a language other than English (among the
+limited number of available translations), arrange for the LANG
+environment variable to be set to the appropriate two-letter code.
+(For instance, set LANG=fr)
+
+Note that there may be issues with accessing files located in folders
+whose path contains non-English characters (accents etc.); if you
+encounter difficulties, move the files to a different folder before 
+editing them.
+
+* KNOWN ISSUES
+
+There are various known issues; the worst ones relate to text items, 
+fonts and printing. 
+
+- If xournal seems to hang the first time you create a text item, just
+be patient: the fontconfig library on which xournal maintains a cache 
+of system fonts, and on Windows the creation of the cache can take 
+several minutes. Once the cache is created, things should run smoothly.
+
+- Some fonts may not print well or export to PDF well. If you have
+trouble with File -> Print, try Export to PDF instead; and vice-versa.
+If neither works well, try using different fonts.
+
+- Copy-paste: when copy-pasting items from other windows applications
+to xournal, sometimes xournal receives an old item rather than the 
+one most recently copied into the clipboard.
+ 
+
+LICENSE AND SOURCE CODE
+-----------------------
+Xournal is free software, available under the GNU General Public
+License. (This means in particular that you may redistribute
+Xournal freely, but must make the source code available as well).
+
+The source code is available from the following locations:
+
+- Xournal:         http://xournal.sourceforge.net
+- GTK+ & friends:  http://www.gtk.org/download/win32.php
+         see also  http://ftp.gnome.org/pub/gnome/sources/
+- libgnomecanvas:  http://ftp.gnome.org/pub/gnome/sources/libgnomecanvas/
+  libart_lgpl:     http://ftp.gnome.org/pub/gnome/sources/libart_lgpl/
+- poppler:         http://poppler.freedesktop.org/releases.html
+
