@@ -12,6 +12,7 @@ for frame = 1:num
     thisFrame = rgb2gray(thisFrame);
     BW = edge(thisFrame);
     %figure, imshow(BW);
+    BW = bwmorph(BW, 'close');
     videoFrames = cat(3,videoFrames,BW);
 end
 
