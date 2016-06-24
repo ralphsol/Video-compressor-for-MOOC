@@ -6,8 +6,8 @@ numberOfFrames = mov.NumberOfFrames;
 
 videoFrames = [];
 %num = numberOfFrames;
-%num = 167;
-num = 50;
+num = 167;
+%num = 24;
 for frame = 1:num
     thisFrame = read(mov, frame);
     thisFrame = rgb2gray(thisFrame);
@@ -32,60 +32,78 @@ end
 %disp(y);
 %disp(z);
 
-
-% clear the exisiting data
-fileID = fopen('output-test.txt','w');
-fprintf(fileID,'');
-fclose(fileID);
-
-%0 -> 1 : <stroke>
-%1 -> 1 : nothing
-%1 -> 0 : </stroke>
-bin_val = 0;
 res = [];
 for k = 1:z
     progressIndication = sprintf('Processed diff[%d]',k);
     disp(progressIndication);
-    bin_prev = bin_val;
-    bin_val = 0;
     for i = 1:x
        for j = 1:y
            if diff(i, j, k)>0
-                bin_val = 1;
-                if bin_prev==0
-                    fileID = fopen('output-test.txt','at');
-                    res = [i, j, double(k)/double(30)];
-                    allOneString = sprintf('<stroke> \n\t%.0f %.0f %.3f ', res(1), res(2), res(3));
-                    fprintf(fileID,'%s', allOneString);
-                    fclose(fileID);
-                    bin_prev = 1;
-                else
-                    fileID = fopen('output-test.txt','at');
-                    res = [i, j, double(k)/double(30)];
-                    allOneString = sprintf('%.0f %.0f %.3f ', res(1), res(2), res(3));
-                    fprintf(fileID,'%s', allOneString);
-                    fclose(fileID);
-                end
+               res = cat(1, res, [i, j, double(k)/double(30)]);
            end
-       end
-    end
-    if bin_val==1
-        if k==z
-            fileID = fopen('output-test.txt','at');
-            fprintf(fileID,'\n</stroke> \n');
-            fclose(fileID);            
-        end
-        disp(k);
-    else
-        if bin_prev==1
-            fileID = fopen('output-test.txt','at');
-            fprintf(fileID,'\n</stroke> \n');
-            fclose(fileID);            
-        end
-        %fileID = fopen('output-test.txt','at');
-        %fprintf(fileID,'\n');
-        %fclose(fileID);        
-    end
+       end           
+   end
 end
+[x, y, z] = size(res);
+%disp(x);
+%disp(y);
+%disp(z);
+%disp(res(:, 3));
+%disp(res);
 
+fileID = fopen('output.txt','w');
+allOneString = sprintf('%.0f ', res(:, 1));
+fprintf(fileID,'%s\n', allOneString);
+allOneString = sprintf('%.0f ', res(:, 2));
+fprintf(fileID,'%s\n', allOneString);
+allOneString = sprintf('%.3f ', res(:, 3));
+fprintf(fileID,'%s\n', allOneString);
+fclose(fileID);
+
+res(:, 3) = [];
+stroke_set = stroke_diff(res);
+disp(stroke_set);
+
+% clear the exisiting data
+fileID = fopen('output-set.txt','w');
+fprintf(fileID,'');
+fclose(fileID);
+
+for i=1:size(stroke_set, 2)
+    fileID = fopen('output-set.txt','at');
+    fprintf(fileID,'<stroke> \n\t');
+    fclose(fileID);
+
+    % storing according to closeness
+    %data = [2,2 ; 2,3 ; 1,2 ; 1,3 ; 2,1 ; 1,1 ; 3,2 ; 3,3 ; 3 ,1];
+    data = stroke_set{i};
+    dist = pdist2(data,data);
+    N = size(data,1);
+    result = NaN(1,N);
+    %result(1) = 1; % first point is first row in data matrix
+    
+    data = far_point(data);
+    result(1) = 1; % farthest point in data matrix
+
+    for ii=2:N
+        dist(:,result(ii-1)) = Inf;
+        [~, closest_idx] = min(dist(result(ii-1),:));
+        result(ii) = closest_idx;
+    end
+    sorted_data = data(result, :);
+
+%   for j=1:size(stroke_set{i}, 1)
+    for j=1:size(sorted_data, 1)
+        fileID = fopen('output-set.txt','at');
+%       tmp = [stroke_set{i}(j,1), stroke_set{i}(j,2), double(1)/double(30)];
+        tmp = [sorted_data(j,1), sorted_data(j,2), double(1)/double(30)];
+        allOneString = sprintf('%.0f %.0f %.3f ', tmp(1), tmp(2), tmp(3));
+        fprintf(fileID,'%s', allOneString);
+        fclose(fileID);
+    end
+    
+    fileID = fopen('output-set.txt','at');
+    fprintf(fileID,'\n</stroke> \n');
+    fclose(fileID);
+end
 close all;
