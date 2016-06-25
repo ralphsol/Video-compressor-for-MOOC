@@ -1,4 +1,4 @@
-out_list = one_per_frame(res);
+out_list = one_per_frame(res); % res from test_conv.m
 disp(size(out_list));
 stroke_set = stroke_diff(out_list);
 disp(stroke_set);
