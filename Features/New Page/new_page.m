@@ -1,5 +1,6 @@
 function [ res ] = new_page( I )
 
+	new_page_threshold = 50;
     res = 0;
     I = edge(rgb2gray(I));
     sum = 0;
@@ -11,7 +12,7 @@ function [ res ] = new_page( I )
             end
         end
     end
-    if sum < 50
+    if sum < new_page_threshold
        res = 1; 
     end
 
