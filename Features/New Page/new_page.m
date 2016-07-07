@@ -1,6 +1,5 @@
 function [ res ] = new_page( I )
-
-	new_page_threshold = 50;
+% the stroke sets will be reset after a new page
     res = 0;
     I = edge(rgb2gray(I));
     sum = 0;
@@ -12,8 +11,10 @@ function [ res ] = new_page( I )
             end
         end
     end
-    if sum < new_page_threshold
-       res = 1; 
+    if sum < 50
+        if size(find(diff), 1) < 20 % something already exists
+           res = 1; 
+        end
     end
 
 end
