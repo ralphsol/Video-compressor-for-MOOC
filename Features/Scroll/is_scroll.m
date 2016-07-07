@@ -2,6 +2,7 @@ function [ res ] = is_scroll( sc_in, sc_fin )
 
     res = 0;
     scroll_threshold = 1000;
+	max_threshold = 100;
     
     %sc_in = imread('C:\Users\Harshil\Desktop\SURA\Resources\scroll_init.png');
     sc_in = double(rgb2gray(sc_in));
@@ -85,7 +86,9 @@ function [ res ] = is_scroll( sc_in, sc_fin )
             trans_diff = imabsdiff(trans_in, trans_fin);
             %disp(sqrt(mean(trans_diff(:).^2)));
             if(sqrt(mean(trans_diff(:).^2)) < scroll_threshold)
-                res = 1;
+				if(yoffSet < max_threshold && xoffSet < max_threshold)
+					res = 1;
+				end
             end
     end
 
