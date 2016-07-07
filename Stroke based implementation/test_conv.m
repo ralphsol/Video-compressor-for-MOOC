@@ -6,63 +6,38 @@ numberOfFrames = mov.NumberOfFrames;
 
 videoFrames = [];
 %num = numberOfFrames;
-num = 167;
-%num = 24;
-for frame = 1:num
-    thisFrame = read(mov, frame);
-    thisFrame = rgb2gray(thisFrame);
-    BW = edge(thisFrame);
-    %figure, imshow(BW);
 
-    BW = bwmorph(BW, 'close');
-    BW = imcrop(BW, [130 5 595 470]);
-
-    videoFrames = cat(3,videoFrames,BW);
-end
-
-diff = [];
-for i = 1:(num-1)
-    %figure, imshow( imabsdiff((videoFrames(:, :, i)), (videoFrames(:, :, i+1))), [] );
-    diff = cat(3, diff, ( imabsdiff((videoFrames(:, :, i)), (videoFrames(:, :, i+1))) ) );
-end
-
-
-
-[x, y, z] = size(diff);
-%disp(x);
-%disp(y);
-%disp(z);
-
-res = [];
-for k = 1:z
-    progressIndication = sprintf('Processed diff[%d]',k);
+intensity_threshold = 0;
+res_stroke = [];
+res_erase = [];
+for i = 1:167
+    fr_in = imcrop(bwmorph(edge(rgb2gray(read(mov, i))), 'close'), [130 5 595 470]);
+    fr_fin = imcrop(bwmorph(edge(rgb2gray(read(mov, i+1))), 'close'), [130 5 595 470]);
+    %figure, imshow( imabsdiff(fr_in, fr_fin), [] );
+    diff = imabsdiff(fr_in, fr_fin);
+    [x, y] = size(diff);
+    progressIndication = sprintf('Processed diff[%d]',i);
     disp(progressIndication);
-    for i = 1:x
-       for j = 1:y
-           if diff(i, j, k)>0
-               res = cat(1, res, [i, j, double(k)/double(30)]);
-           end
-       end           
-   end
+    if max(max(diff))==0
+       continue;
+    end
+    [row, col] = find(diff > intensity_threshold);
+    res_stroke = [res_stroke; row, col, ones(size(row), 1)*double(i)/double(30);];
+    [row, col] = find(diff < intensity_threshold);
+    res_erase = [res_erase; row, col, ones(size(row), 1)*double(i)/double(30);];
 end
-[x, y, z] = size(res);
-%disp(x);
-%disp(y);
-%disp(z);
-%disp(res(:, 3));
-%disp(res);
 
 fileID = fopen('output.txt','w');
-allOneString = sprintf('%.0f ', res(:, 1));
+allOneString = sprintf('%.0f ', res_stroke(:, 1));
 fprintf(fileID,'%s\n', allOneString);
-allOneString = sprintf('%.0f ', res(:, 2));
+allOneString = sprintf('%.0f ', res_stroke(:, 2));
 fprintf(fileID,'%s\n', allOneString);
-allOneString = sprintf('%.3f ', res(:, 3));
+allOneString = sprintf('%.3f ', res_stroke(:, 3));
 fprintf(fileID,'%s\n', allOneString);
 fclose(fileID);
 
 %res(:, 3) = [];
-stroke_set = stroke_diff(res);
+stroke_set = stroke_diff(res_stroke);
 disp(stroke_set);
 
 % clear the exisiting data
