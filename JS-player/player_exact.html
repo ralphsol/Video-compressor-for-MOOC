@@ -1,0 +1,80 @@
+<html>
+<body>
+    <div hidden><img id="base" src="base.jpg" width="800" height="800"></div>
+<canvas id="myCanvas" width="800" height="800"
+style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+<input type="file" name="file" id="file"/>
+<button onclick="play()">Play/Pause</button>
+<script>
+
+    var xArr=[];
+    var yArr=[];
+	var iArr=[];
+    var tArr=[];
+
+    document.getElementById('file').onchange = function(){  
+		var file = this.files[0];
+		var reader = new FileReader();
+		reader.onload = function(progressEvent){
+			// Entire file
+			console.log(this.result);
+			
+			// By lines
+			var lines = this.result.split('\n');
+			
+			var xwords = lines[0].split(' ');
+			for(var word = 0 ; word < xwords.length ; word++) {
+				xArr.push(parseFloat(xwords[word]));
+			}
+			
+			var ywords = lines[1].split(' ');
+			for(var word = 0 ; word < ywords.length ; word++) {
+				yArr.push(parseFloat(ywords[word]));
+			}
+			
+			var iwords = lines[2].split(' ');
+			for(var word = 0 ; word < iwords.length ; word++) {
+				iArr.push(parseFloat(iwords[word]));
+			}
+			
+			var twords = lines[3].split(' ');
+			for(var word = 0 ; word < twords.length ; word++) {
+				tArr.push(parseFloat(twords[word]));
+			}
+		};
+		reader.readAsText(file);
+	};
+
+
+	function play(){
+		var element = document.getElementById("myCanvas");
+		var c = element.getContext("2d");
+		var width = element.width;
+		var height = element.height;
+		var index=0;
+		var img = document.getElementById("base");
+		//var time = Math.round(tArr[0]);
+		c.drawImage(img,0,0,800,800);
+		setInterval(
+			function(){
+				var my_imageData = c.getImageData(0,0,width, height);
+				//color(my_imageData,Math.round(yArr[index]),Math.round(xArr[index]),120,255);
+				color(my_imageData,Math.round(yArr[index]),Math.round(xArr[index]),Math.round(iArr[index]),255);
+				c.putImageData(my_imageData,0,0);
+				index=index+1;
+			}
+		,30);
+	}
+	
+	function color(imageData,x,y,i,a){
+		var index = (x + y * imageData.width) * 4;
+		imageData.data[index+0] = i;
+		imageData.data[index+1] = i;
+		imageData.data[index+2] = i;
+		imageData.data[index+3] = a;
+	}
+
+</script>
+</body>
+</html>
