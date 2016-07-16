@@ -54,15 +54,18 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 		var height = element.height;
 		var index=0;
 		var img = document.getElementById("base");
-		//var time = Math.round(tArr[0]);
+		var time = tArr[0];
 		c.drawImage(img,0,0,800,800);
 		setInterval(
 			function(){
-				var my_imageData = c.getImageData(0,0,width, height);
-				//color(my_imageData,Math.round(yArr[index]),Math.round(xArr[index]),120,255);
-				color(my_imageData,Math.round(yArr[index]),Math.round(xArr[index]),Math.round(iArr[index]),255);
-				c.putImageData(my_imageData,0,0);
-				index=index+1;
+				while(tArr[index]==time) {
+					var my_imageData = c.getImageData(0,0,width, height);
+					//color(my_imageData,Math.round(yArr[index]),Math.round(xArr[index]),120,255);
+					color(my_imageData,Math.round(yArr[index]),Math.round(xArr[index]),Math.round(iArr[index]),255);
+					c.putImageData(my_imageData,0,0);
+					index=index+1;
+				}
+				time = tArr[index];
 			}
 		,30);
 	}
