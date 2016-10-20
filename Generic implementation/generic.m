@@ -37,7 +37,12 @@ for i = 1:num-1
     for x = 1:size(row, 1)
         val = [val; fr_fin(row(x), col(x));];
     end
-    res = [res; row, col, uint16(val), ones(size(row), 1)*i*33.3333;];
+%    if length(res) > 0
+%        res = [res; row, col, uint32(val), uint32(ones(size(row), 1)*i*33.3333) - res(end);];
+%    else
+%        res = [res; row, col, uint32(val), uint32(ones(size(row), 1)*i*33.3333);];
+%    end
+    res = [res; row, col, uint32(val), uint32(ones(size(row), 1)*i*33.3333);];
 %    end
 end
 
